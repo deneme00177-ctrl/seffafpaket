@@ -6,12 +6,10 @@
   <title id="pageTitle"></title>
   <meta name="facebook-domain-verification" content="ltt9dng4fc87p9kbup0aqdu0o2khf8" />
   
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
   <script>
@@ -89,7 +87,6 @@
   </noscript>
 
   <style>
-    /* CSS Değişkenleri yeni açık temaya göre uyarlandı (Formlar ve modallar için) */
     :root {
       --bg-base: #f2f2f2;
       --bg-surface: #ffffff;
@@ -105,11 +102,15 @@
       --accent-success: #10b981;
       --font-body: 'Inter', sans-serif;
       --font-heading: 'Manrope', sans-serif;
+
+      --pl-accent: #f4c533;
+      --pl-btn-bg: #111827;
+      --pl-btn-text: #ffffff;
+      --pl-price: #111827;
     }
 
     body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
     
-    /* Özel Form Input Stilleri */
     .custom-input, .custom-select, .variant-select {
       background: #f9fafb;
       border: 1.5px solid #e5e7eb;
@@ -140,7 +141,6 @@
       background-color: rgba(239, 68, 68, 0.05);
     }
 
-    /* Modal ve Toast CSS Uyarlamaları */
     .toast {
       position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
       background: #ffffff; color: #111827; padding: 14px 28px;
@@ -187,60 +187,304 @@
     .modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #111827; font-size: 24px; cursor: pointer; }
     
     #loading { text-align: center; color: #111827; padding: 40px 20px; font-weight: 700; font-size: 14px; text-transform: uppercase; }
+
+    .animated-logo {
+      background: linear-gradient(90deg, #111827 0%, #111827 35%, #f4c533 50%, #d4af37 55%, #111827 70%, #111827 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: logoShimmer 3.2s linear infinite;
+    }
+    @keyframes logoShimmer {
+      0% { background-position: 200% center; }
+      100% { background-position: -100% center; }
+    }
+
+    .shimmer-line {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(244,197,51,0.35) 50%, transparent 100%);
+      animation: shimmerMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes shimmerMove {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .cd-pulse {
+      animation: cdPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes cdPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(244,197,51,0.5); }
+      50% { box-shadow: 0 0 0 6px rgba(244,197,51,0); }
+    }
+
+    .floating-badge {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(255,255,255,0.88));
+      color: #111827;
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 999px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.28), 0 0 0 1.5px rgba(244,197,51,0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      z-index: 5;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .floating-badge .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 0 8px rgba(16,185,129,0.9);
+      animation: dotBlink 1.4s ease-in-out infinite;
+    }
+    @keyframes dotBlink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.75); }
+    }
+
+    .fb-1 { top: 8%;  left: 5%;   animation: drift1 7s   ease-in-out infinite; }
+    .fb-2 { top: 14%; right: 5%;  animation: drift2 8.5s ease-in-out infinite; }
+    .fb-3 { bottom: 14%; left: 6%;  animation: drift3 6.8s ease-in-out infinite; }
+    .fb-4 { bottom: 8%;  right: 6%; animation: drift4 7.7s ease-in-out infinite; }
+
+    @keyframes drift1 {
+      0%,100% { transform: translate(0,0) rotate(-2deg); }
+      25%     { transform: translate(14px,-10px) rotate(2deg); }
+      50%     { transform: translate(-10px,12px) rotate(-1.5deg); }
+      75%     { transform: translate(10px,6px) rotate(1deg); }
+    }
+    @keyframes drift2 {
+      0%,100% { transform: translate(0,0) rotate(2deg); }
+      25%     { transform: translate(-14px,10px) rotate(-2deg); }
+      50%     { transform: translate(10px,14px) rotate(1.5deg); }
+      75%     { transform: translate(-8px,-10px) rotate(-1deg); }
+    }
+    @keyframes drift3 {
+      0%,100% { transform: translate(0,0) rotate(-1deg); }
+      25%     { transform: translate(16px,8px) rotate(1.5deg); }
+      50%     { transform: translate(-8px,-12px) rotate(-2deg); }
+      75%     { transform: translate(12px,-8px) rotate(1deg); }
+    }
+    @keyframes drift4 {
+      0%,100% { transform: translate(0,0) rotate(1.5deg); }
+      25%     { transform: translate(-16px,-8px) rotate(-1deg); }
+      50%     { transform: translate(10px,-14px) rotate(2deg); }
+      75%     { transform: translate(-12px,10px) rotate(-1.5deg); }
+    }
+
+    .feature-bar-1 {
+      background: linear-gradient(135deg, #eef2ff 0%, #fef3c7 35%, #fce7f3 70%, #ecfeff 100%);
+      position: relative;
+    }
+    .feature-bar-1::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(99,102,241,0.08), transparent 45%),
+                  radial-gradient(circle at 80% 50%, rgba(244,197,51,0.12), transparent 45%);
+      pointer-events: none;
+    }
+
+    .feature-bar-2 {
+      background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-bar-2::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 15% 0%, rgba(99,102,241,0.18), transparent 50%),
+                  radial-gradient(circle at 85% 100%, rgba(244,197,51,0.18), transparent 50%);
+      pointer-events: none;
+    }
+
+    .feature-icon-ring {
+      position: relative;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4);
+      transition: transform 0.25s ease;
+    }
+    .feature-icon-ring:hover { transform: translateY(-3px) scale(1.06); }
+    .feature-icon-ring::after {
+      content: '';
+      position: absolute; inset: -3px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      opacity: 0.6;
+    }
+    .ring-blue    { background: linear-gradient(135deg, #60a5fa, #4f46e5); box-shadow: 0 6px 16px rgba(79,70,229,0.42), inset 0 1px 0 rgba(255,255,255,0.5); }
+    .ring-green   { background: linear-gradient(135deg, #34d399, #059669); box-shadow: 0 6px 16px rgba(5,150,105,0.42), inset 0 1px 0 rgba(255,255,255,0.5); }
+    .ring-purple  { background: linear-gradient(135deg, #c084fc, #a21caf); box-shadow: 0 6px 16px rgba(162,28,175,0.42), inset 0 1px 0 rgba(255,255,255,0.5); }
+    .ring-amber   { background: linear-gradient(135deg, #fbbf24, #ea580c); box-shadow: 0 6px 16px rgba(234,88,12,0.42), inset 0 1px 0 rgba(255,255,255,0.5); }
+
+    .pl-card {
+      border-color: #f1f5f9;
+      transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+    .pl-card:hover {
+      border-color: var(--pl-accent, #f4c533);
+      box-shadow: 0 12px 26px -14px var(--pl-accent, #f4c533);
+    }
+    .pl-price { color: var(--pl-price, #111827); }
+    .pl-btn {
+      background: var(--pl-btn-bg, #111827);
+      color: var(--pl-btn-text, #ffffff);
+      transition: filter .2s ease, transform .15s ease;
+    }
+    .pl-btn:hover { filter: brightness(1.18); }
+    .pl-btn:active { transform: scale(0.97); }
+
+    .pl-accent-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, var(--pl-accent, #f4c533) 50%, transparent 100%);
+      opacity: .9;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .hp-trap {
+      position: absolute !important;
+      left: -99999px !important;
+      top: -99999px !important;
+      width: 1px !important;
+      height: 1px !important;
+      overflow: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* WhatsApp Modal */
+    #modal-whatsapp .modal-content {
+      padding: 0;
+      overflow: hidden;
+      max-width: 440px;
+      border-radius: 20px;
+    }
+    #modal-whatsapp .wa-header {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    }
   </style>
+
+  <script>
+    (function () {
+      let nonce = '';
+      try { nonce = sessionStorage.getItem('_bg_nonce') || ''; } catch (e) {}
+      if (!nonce) {
+        try {
+          nonce = (window.crypto && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : (Math.random().toString(36).slice(2) + Date.now().toString(36));
+          sessionStorage.setItem('_bg_nonce', nonce);
+        } catch (e) {
+          nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+        }
+      }
+
+      const mixClass = 'mk' + Math.random().toString(36).slice(2, 9);
+
+      window.__BOT_GUARD__ = {
+        nonce: nonce,
+        mixClass: mixClass,
+        startTime: Date.now(),
+        mouse: 0, touch: 0, scroll: 0, key: 0, focus: 0, change: 0
+      };
+
+      const inc = (k) => { try { window.__BOT_GUARD__[k]++; } catch (e) {} };
+      document.addEventListener('mousemove',    () => inc('mouse'),  { passive: true });
+      document.addEventListener('touchstart',   () => inc('touch'),  { passive: true });
+      document.addEventListener('scroll',       () => inc('scroll'), { passive: true });
+      document.addEventListener('keydown',      () => inc('key'),    { passive: true });
+      document.addEventListener('focusin',      () => inc('focus'),  { passive: true });
+      document.addEventListener('change',       () => inc('change'), { passive: true });
+    })();
+  </script>
 </head>
 
 <body class="min-h-full flex flex-col bg-[#e5e5e5] items-center justify-start pb-28">
 
   <div class="relative w-full max-w-[640px] bg-[#f2f2f2] min-h-screen flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.15)] overflow-x-hidden">
     
-    <!-- HEADER -->
-    <header class="bg-white border-b border-gray-100 px-4 py-3 flex items-center sticky top-0 z-40" id="mainHeader">
-      <div class="w-10"></div>
-      <div class="flex-1 flex justify-center">
-        <span class="text-[19px] leading-none font-black tracking-[0.08em] uppercase text-[#111827]" id="headerLogo"></span>
+    <div class="sticky top-0 z-40">
+      <div id="campaign-bar" class="relative overflow-hidden bg-gradient-to-r from-[#111827] via-[#1f2937] to-[#111827] text-white py-1.5 px-3 flex items-center justify-center gap-2 text-[10px] font-bold">
+        <div class="shimmer-line"></div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f4c533" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 shrink-0"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span class="text-[#f4c533] tracking-wider relative z-10">KAMPANYA BİTİŞİNE SON</span>
+        <span id="cd-timer" class="cd-pulse font-mono text-white text-[11px] font-black tracking-[0.15em] relative z-10 bg-[#f4c533]/15 backdrop-blur-sm px-2 py-0.5 rounded-md border border-[#f4c533]/45">12:00:00</span>
       </div>
-      <div class="w-10"></div>
-    </header>
+
+      <header class="bg-white/95 backdrop-blur-md border-b border-gray-100 px-4 py-3 flex items-center" id="mainHeader">
+        <div class="w-10"></div>
+        <div class="flex-1 flex justify-center">
+          <span class="text-[19px] leading-none font-black tracking-[0.08em] uppercase animated-logo" id="headerLogo" style="font-family: 'Manrope', sans-serif;"></span>
+        </div>
+        <div class="w-10"></div>
+      </header>
+    </div>
 
     <div class="flex-1 flex flex-col min-h-0">
       
-      <!-- ÖZELLİKLER BARI 1 -->
-      <div class="bg-white border-b border-gray-100 grid grid-cols-4 py-2.5 px-1">
-        <div class="flex flex-col items-center gap-1 text-center px-1">
-          <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg></div>
-          <div class="text-[7px] font-black text-[#111827] leading-tight">HIZLI TESLİMAT</div>
-          <div class="text-[6.5px] text-gray-400 leading-tight">Aynı gün kargo</div>
+      <div class="feature-bar-1 border-b border-gray-100 grid grid-cols-4 py-3 px-1 relative">
+        <div class="relative flex flex-col items-center gap-1.5 text-center px-1">
+          <div class="feature-icon-ring ring-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+          </div>
+          <div class="text-[7px] font-black text-[#111827] leading-tight tracking-wider">HIZLI TESLİMAT</div>
+          <div class="text-[6.5px] text-gray-500 leading-tight">Aynı gün kargo</div>
         </div>
-        <div class="flex flex-col items-center gap-1 text-center px-1">
-          <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg></div>
-          <div class="text-[7px] font-black text-[#111827] leading-tight">KAPIDA ÖDEME</div>
-          <div class="text-[6.5px] text-gray-400 leading-tight">Güvenle öde</div>
+        <div class="relative flex flex-col items-center gap-1.5 text-center px-1">
+          <div class="feature-icon-ring ring-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+          </div>
+          <div class="text-[7px] font-black text-[#111827] leading-tight tracking-wider">KAPIDA ÖDEME</div>
+          <div class="text-[6.5px] text-gray-500 leading-tight">Güvenle öde</div>
         </div>
-        <div class="flex flex-col items-center gap-1 text-center px-1">
-          <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
-          <div class="text-[7px] font-black text-[#111827] leading-tight">ŞEFFAF KARGO</div>
-          <div class="text-[6.5px] text-gray-400 leading-tight">Anlık takip</div>
+        <div class="relative flex flex-col items-center gap-1.5 text-center px-1">
+          <div class="feature-icon-ring ring-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          </div>
+          <div class="text-[7px] font-black text-[#111827] leading-tight tracking-wider">ŞEFFAF KARGO</div>
+          <div class="text-[6.5px] text-gray-500 leading-tight">Anlık takip</div>
         </div>
-        <div class="flex flex-col items-center gap-1 text-center px-1">
-          <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg></div>
-          <div class="text-[7px] font-black text-[#111827] leading-tight">MÜŞTERİ DESTEĞİ</div>
-          <div class="text-[6.5px] text-gray-400 leading-tight">7/24 destek</div>
+        <div class="relative flex flex-col items-center gap-1.5 text-center px-1">
+          <div class="feature-icon-ring ring-amber">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+          </div>
+          <div class="text-[7px] font-black text-[#111827] leading-tight tracking-wider">MÜŞTERİ DESTEĞİ</div>
+          <div class="text-[6.5px] text-gray-500 leading-tight">7/24 destek</div>
         </div>
       </div>
 
-      <!-- HERO BÖLÜMÜ -->
-      <div class="mx-2.5 mt-2.5 rounded-2xl overflow-hidden bg-[#111827] relative" style="aspect-ratio:1774 / 887">
-        <img alt="Hero" class="object-cover absolute h-full w-full inset-0" src="https://i.ibb.co/3YmGbxTL/447db16c8456.png">
-      </div>
-      
       <div class="px-0">
         <div class="mx-2.5 mt-3 rounded-2xl overflow-hidden relative bg-[#111827]" style="aspect-ratio: 1774 / 887;">
-          <img alt="5 ÇİFT" class="object-cover absolute h-full w-full inset-0" src="https://i.ibb.co/zHRvCc5N/c2ac4d188585.webp">
+          <img alt="5 ÇİFT" class="object-cover absolute h-full w-full inset-0" src="https://i.ibb.co/hxgCYHyp/c9688356693c.png">
+          
+          <div class="absolute inset-0 pointer-events-none">
+            <!--<div class="floating-badge fb-1"><span class="badge-dot"></span><span></span></div>-->
+            <div class="floating-badge fb-2"><span class="badge-dot"></span><span>🚚 ARAS KARGO</span></div>
+              <!--<div class="floating-badge fb-3"><span class="badge-dot"></span><span></span></div>-->
+            <div class="floating-badge fb-4"><span class="badge-dot"></span><span>✅ ŞEFFAF KARGO</span></div>
+          </div>
+
+          <div class="absolute inset-0 ring-1 ring-inset ring-[#f4c533]/35 rounded-2xl pointer-events-none"></div>
         </div>
       </div>
 
-      <!-- DİNAMİK MESAJ ALANI (Opsiyonel Kampanya Yazısı) -->
       <div class="flex items-center justify-center mt-3 mb-3">
         <div class="inline-flex items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-full px-3 py-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
@@ -248,28 +492,35 @@
         </div>
       </div>
 
-      <!-- ÖZELLİKLER BARI 2 -->
       <div class="px-2.5">
-        <div class="bg-white rounded-2xl grid grid-cols-4 py-2.5 px-1 mb-3">
-          <div class="flex flex-col items-center gap-0.5 text-center">
-            <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg></div>
-            <div class="text-[7px] font-black text-[#111827] leading-tight">HIZLI TESLİMAT</div>
-            <div class="text-[6.5px] text-gray-400">Aynı gün kargo</div>
+        <div class="feature-bar-2 rounded-2xl grid grid-cols-4 py-3 px-1 mb-3 shadow-[0_8px_24px_rgba(17,24,39,0.28)]">
+          <div class="relative flex flex-col items-center gap-1.5 text-center">
+            <div class="feature-icon-ring ring-blue">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+            </div>
+            <div class="text-[7px] font-black text-white leading-tight tracking-wider">HIZLI TESLİMAT</div>
+            <div class="text-[6.5px] text-white/55">Aynı gün kargo</div>
           </div>
-          <div class="flex flex-col items-center gap-0.5 text-center">
-            <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg></div>
-            <div class="text-[7px] font-black text-[#111827] leading-tight">KAPIDA ÖDEME</div>
-            <div class="text-[6.5px] text-gray-400">Güvenle öde</div>
+          <div class="relative flex flex-col items-center gap-1.5 text-center">
+            <div class="feature-icon-ring ring-green">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+            </div>
+            <div class="text-[7px] font-black text-white leading-tight tracking-wider">KAPIDA ÖDEME</div>
+            <div class="text-[6.5px] text-white/55">Güvenle öde</div>
           </div>
-          <div class="flex flex-col items-center gap-0.5 text-center">
-            <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
-            <div class="text-[7px] font-black text-[#111827] leading-tight">ŞEFFAF KARGO</div>
-            <div class="text-[6.5px] text-gray-400">Anlık takip</div>
+          <div class="relative flex flex-col items-center gap-1.5 text-center">
+            <div class="feature-icon-ring ring-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div class="text-[7px] font-black text-white leading-tight tracking-wider">ŞEFFAF KARGO</div>
+            <div class="text-[6.5px] text-white/55">Anlık takip</div>
           </div>
-          <div class="flex flex-col items-center gap-0.5 text-center">
-            <div class="text-[#111827]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg></div>
-            <div class="text-[7px] font-black text-[#111827] leading-tight">MÜŞTERİ DESTEĞİ</div>
-            <div class="text-[6.5px] text-gray-400">7/24 destek</div>
+          <div class="relative flex flex-col items-center gap-1.5 text-center">
+            <div class="feature-icon-ring ring-amber">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+            </div>
+            <div class="text-[7px] font-black text-white leading-tight tracking-wider">MÜŞTERİ DESTEĞİ</div>
+            <div class="text-[6.5px] text-white/55">7/24 destek</div>
           </div>
         </div>
 
@@ -278,13 +529,9 @@
           <div class="bg-gray-200 text-[#111827] text-[10px] font-black px-3 py-1 rounded-lg" id="selection-header">SEÇİLEN: <span class="text-[#111827] font-black">0</span></div>
         </div>
 
-        <!-- ÜRÜN LİSTESİ YÜKLENİYOR -->
         <div id="loading">KOLEKSİYON YÜKLENİYOR...</div>
-        
-        <!-- ÜRÜN IZGARASI -->
         <div id="product-list" class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4"></div>
 
-        <!-- SİPARİŞ FORMU (Başlangıçta gizli) -->
         <section id="order-section" class="hidden bg-white rounded-3xl p-5 mb-8 shadow-md border border-gray-100">
           <h2 class="text-xl font-black text-[#111827] mb-3 uppercase tracking-tight">Sipariş Bilgileri</h2>
           
@@ -298,14 +545,22 @@
 
           <div id="cart-items-summary" class="mb-6 flex flex-col gap-2"></div>
 
-          <form id="orderForm" class="flex flex-col gap-4">
+          <form id="orderForm" class="flex flex-col gap-4" autocomplete="off">
+
+            <div class="hp-trap" aria-hidden="true">
+              <label for="hp_company_x">Firma Adı</label>
+              <input type="text" id="hp_company_x" name="company" tabindex="-1" autocomplete="off" value="">
+              <label for="hp_birth_x">Doğum Tarihi</label>
+              <input type="text" id="hp_birth_x" name="birthdate" tabindex="-1" autocomplete="off" value="">
+            </div>
+
             <div>
               <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ad Soyad *</label>
-              <input class="custom-input" type="text" id="adSoyad" placeholder="Adınız ve soyadınız" maxlength="50" required>
+              <input class="custom-input" type="text" id="adSoyad" placeholder="Adınız ve soyadınız" maxlength="50" required autocomplete="name">
             </div>
             <div>
               <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Telefon Numarası *</label>
-              <input class="custom-input" type="tel" id="telefon" placeholder="05XX XXX XX XX" maxlength="11" required>
+              <input class="custom-input" type="tel" id="telefon" placeholder="05XX XXX XX XX" maxlength="11" required autocomplete="tel">
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
@@ -337,36 +592,28 @@
             </button>
           </form>
         </section>
-        
-        <!-- SATISFACTION / REVIEWS SECTION -->
-       <!-- <section class="mt-4 mb-8 bg-white py-6 rounded-3xl shadow-sm px-4 border border-gray-100">
-            <div class="text-center mb-6">
-                <span class="inline-block bg-green-50 text-green-600 text-xs font-bold px-3 py-1 rounded-full border border-green-200 mb-2">%98.7 Memnuniyet</span>
-                <h3 class="text-xl font-black text-gray-900 leading-tight">Müşterilerimiz<br><span class="text-blue-500">Neden</span> Bizi Seçiyor?</h3>
-            </div>
-            <div id="dynamic-testimonial-grid" class="flex overflow-x-auto gap-4 pb-4 snap-x"></div>
-        </section> -->
-        
-        <!-- YASAL LİNKLER & FOOTER -->
+                <div class="px-2.5 mt-6 mb-6">
+          <div class="rounded-2xl overflow-hidden relative bg-[#111827] shadow-md ring-1 ring-inset ring-[#f4c533]/25" style="aspect-ratio: 16 / 9;">
+            <img
+              alt="Kampanya Görseli"
+              src="https://i.ibb.co/1fgqghxH/6bdc15e14a35.png"
+              loading="lazy"
+              class="object-cover absolute h-full w-full inset-0"
+            >
+          </div>
+        </div>
         <footer class="text-center py-6 text-xs text-gray-400 mt-auto">
-         <!-- <div class="mb-4 text-gray-500 leading-relaxed font-medium">
-            <strong id="footerCompanyInfo" class="text-gray-700 block mb-1"></strong>
-            <span id="footerAddressInfo" class="block">📍 İstanbul</span>
-            <span id="footerSupportInfo" class="block">📞 Destek: 0850 ...</span>
-          </div> -->
           <div class="flex flex-wrap justify-center gap-3 mb-4 font-semibold">
             <a onclick="openModal('modal-mesafeli')" id="footerLinkMesafeli" class="cursor-pointer hover:text-gray-800">Mesafeli Satış</a>
             <a onclick="openModal('modal-iade')" id="footerLinkIade" class="cursor-pointer hover:text-gray-800">İade Şartları</a>
             <a onclick="openModal('modal-gizlilik')" id="footerLinkGizlilik" class="cursor-pointer hover:text-gray-800">Gizlilik</a>
             <a onclick="openModal('modal-kvkk')" id="footerLinkKvkk" class="cursor-pointer hover:text-gray-800">KVKK</a>
           </div>
-         <!--  <div id="footerText" class="opacity-70">© 2026 Tüm hakları saklıdır.</div>-->
         </footer>
 
       </div>
     </div>
 
-    <!-- STICKY BOTTOM BAR -->
     <div id="sticky-bar" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[640px] bg-[#111827] rounded-t-3xl px-3.5 pt-2.5 pb-5 shadow-[0_-4px_20px_rgba(0,0,0,0.25)] z-50 hidden">
       <div class="flex items-center gap-2.5 mb-2.5">
         <div class="w-9 h-9 rounded-full bg-[#f4c533] flex items-center justify-center shrink-0">
@@ -376,21 +623,19 @@
           <div class="text-[9px] font-black text-[#f4c533]" id="cart-count">SEÇİLEN: 0</div>
           <div class="text-[7.5px] text-white/50" id="total-price-display">Toplam: 0 ₺</div>
         </div>
-        <div class="flex gap-1.5 flex-1 justify-end items-center flex-wrap" id="cart-mini-slots">
-          <!-- JS Dinamik Üretecek -->
-        </div>
+        <div class="flex gap-1.5 flex-1 justify-end items-center flex-wrap" id="cart-mini-slots"></div>
       </div>
       <button id="sticky-checkout-btn" onclick="window.processStickyClick()" class="w-full bg-[#f4c533] text-[#111827] py-3 rounded-xl text-[13px] font-black tracking-wide disabled:opacity-40 disabled:bg-gray-500 disabled:text-white transition-all">
         SEÇİMİ TAMAMLA →
       </button>
     </div>
 
-    <!-- WHATSAPP BUTONU -->
-    <a href="https://wa.me/905555555555" id="whatsappBtn" target="_blank" rel="noopener noreferrer" class="fixed right-[max(calc(50%-320px+14px),14px)] bottom-36 w-[50px] h-[50px] bg-[#25D366] rounded-full flex items-center justify-center shadow-lg z-40 hover:scale-105 transition-transform">
+    <!-- WHATSAPP BUTONU (artık modal açıyor) -->
+    <a href="javascript:void(0)" onclick="openWhatsAppModal(event)" id="whatsappBtn" rel="noopener noreferrer" class="fixed right-[max(calc(50%-320px+14px),14px)] bottom-36 w-[50px] h-[50px] bg-[#25D366] rounded-full flex items-center justify-center shadow-lg z-40 hover:scale-105 transition-transform">
       <svg viewBox="0 0 24 24" class="w-6 h-6 fill-white"><path d="M19.1 4.9A9.9 9.9 0 0012 2C6.5 2 2 6.5 2 12c0 1.8.5 3.6 1.4 5.1L2 22l5.1-1.3A10 10 0 0012 22a10 10 0 007.1-17.1zm-7.1 15.4c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.3 8.3 0 013.7 12 8.3 8.3 0 0112 3.7a8.3 8.3 0 015.9 14.2 8.2 8.2 0 01-5.9 2.4zm4.6-6.2c-.2-.1-1.3-.6-1.5-.7-.2-.1-.3-.1-.4.1-.1.2-.6.7-.7.8-.1.1-.2.2-.4.1-.2-.1-.9-.3-1.7-1-.7-.6-1.1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.3.2-.3c.1-.1.1-.2.1-.4s-.4-1.4-.6-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.7.7-.7 1.8 0 1 .7 2.1.8 2.2.1.1 1.4 2.2 3.3 3 .5.2 1 .4 1.3.5.6.2 1.1.2 1.5.1.5-.1 1.3-.5 1.4-1 .2-.5.2-1 .2-1.1 0-.1-.1-.2-.3-.3z"></path></svg>
     </a>
 
-  </div> <!-- Container End -->
+  </div>
 
   <!-- MODALLAR -->
   <div id="modal-mesafeli" class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeAllModals()">✕</button><h3 class="text-lg font-bold mb-3 border-b pb-2">Mesafeli Satış Sözleşmesi</h3><p><strong>6502 Sayılı Tüketicinin Korunması Hakkında Kanun gereğince;</strong><br><br>1. SATICI BİLGİLERİ<br>Ünvanı: <strong id="modalCompanyInfo"></strong><br>Adres: <span id="modalAddressInfo"></span><br>İletişim: <span id="modalSupportInfo"></span><br><br>2. KONU<br>İşbu sözleşmenin konusu, ALICI'nın SATICI'ya ait internet sitesinden elektronik ortamda siparişini yaptığı ürünün satışı ve teslimi ile ilgili yasal hak ve yükümlülüklerin belirlenmesidir.<br><br>3. CAYMA HAKKI<br>Alıcı, ürünü teslim aldığı tarihten itibaren 14 (on dört) gün içinde cayma hakkına sahiptir.</p></div></div>
@@ -398,19 +643,76 @@
   <div id="modal-gizlilik" class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeAllModals()">✕</button><h3 class="text-lg font-bold mb-3 border-b pb-2">Gizlilik ve Çerez Politikası</h3><p>Verileriniz 256-bit SSL güvenlik sertifikası ile şifrelenerek korunmaktadır. Üçüncü şahıslarla paylaşılmaz.</p></div></div>
   <div id="modal-kvkk" class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeAllModals()">✕</button><h3 class="text-lg font-bold mb-3 border-b pb-2">KVKK Aydınlatma Metni</h3><p>6698 sayılı kanun kapsamında verileriniz sözleşmenin kurulması amacıyla işlenmektedir.</p></div></div>
 
+  <!-- YENİ: WHATSAPP İLETİŞİM MODAL -->
+  <div id="modal-whatsapp" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="wa-header relative px-5 py-5 text-white">
+        <button class="absolute top-3 right-4 text-white/80 hover:text-white text-2xl leading-none font-light" onclick="closeAllModals()" type="button">×</button>
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center shrink-0 ring-2 ring-white/30">
+            <svg viewBox="0 0 24 24" class="w-7 h-7 fill-white"><path d="M19.1 4.9A9.9 9.9 0 0012 2C6.5 2 2 6.5 2 12c0 1.8.5 3.6 1.4 5.1L2 22l5.1-1.3A10 10 0 0012 22a10 10 0 007.1-17.1zm-7.1 15.4c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.3 8.3 0 013.7 12 8.3 8.3 0 0112 3.7a8.3 8.3 0 015.9 14.2 8.2 8.2 0 01-5.9 2.4zm4.6-6.2c-.2-.1-1.3-.6-1.5-.7-.2-.1-.3-.1-.4.1-.1.2-.6.7-.7.8-.1.1-.2.2-.4.1-.2-.1-.9-.3-1.7-1-.7-.6-1.1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.3.2-.3c.1-.1.1-.2.1-.4s-.4-1.4-.6-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.7.7-.7 1.8 0 1 .7 2.1.8 2.2.1.1 1.4 2.2 3.3 3 .5.2 1 .4 1.3.5.6.2 1.1.2 1.5.1.5-.1 1.3-.5 1.4-1 .2-.5.2-1 .2-1.1 0-.1-.1-.2-.3-.3z"></path></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-black leading-tight">WhatsApp ile İletişim</h3>
+            <p class="text-[11px] text-white/85 leading-tight mt-0.5">Bilgilerinizi doldurun, sizi yönlendirelim</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="whatsappForm" class="px-5 py-4 flex flex-col gap-3" autocomplete="off" novalidate>
+        <div>
+          <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ad Soyad *</label>
+          <input class="custom-input" type="text" id="wp_name" placeholder="Adınız Soyadınız" maxlength="50" required>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Telefon Numarası *</label>
+          <input class="custom-input" type="tel" id="wp_phone" placeholder="05XX XXX XX XX" maxlength="11" required>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mesajınız *</label>
+          <textarea class="custom-input min-h-[90px]" id="wp_msg" placeholder="Size nasıl yardımcı olabiliriz? Sipariş, ürün, kargo hakkında sorabilirsiniz..." maxlength="500" required rows="3"></textarea>
+        </div>
+        <button type="submit" class="w-full bg-[#25D366] text-white py-3.5 rounded-xl text-[13px] font-black uppercase tracking-wide hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-1 shadow-[0_8px_20px_-8px_rgba(37,211,102,0.7)]">
+          <svg viewBox="0 0 24 24" class="w-4 h-4 fill-white"><path d="M19.1 4.9A9.9 9.9 0 0012 2C6.5 2 2 6.5 2 12c0 1.8.5 3.6 1.4 5.1L2 22l5.1-1.3A10 10 0 0012 22a10 10 0 007.1-17.1z"/></svg>
+          WhatsApp'ta Aç
+        </button>
+        <p class="text-[10px] text-gray-400 text-center leading-tight">🔒 Bilgileriniz gizli tutulur, yalnızca size dönüş yapmak için kullanılır.</p>
+      </form>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT & LOGIC -->
   <script type="module">
-	import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, getDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = await fetch('./firebase-config.json', { cache: 'no-store' }).then(res => res.json());
     const app = initializeApp(firebaseConfig, 'mainApp');
     const db = getFirestore(app);
 
+    const THEMES = [
+      { accent:'#f4c533', btnBg:'#111827', btnText:'#ffffff', price:'#111827' },
+      { accent:'#3b82f6', btnBg:'#1e3a8a', btnText:'#ffffff', price:'#1d4ed8' },
+      { accent:'#10b981', btnBg:'#064e3b', btnText:'#ffffff', price:'#047857' },
+      { accent:'#8b5cf6', btnBg:'#4c1d95', btnText:'#ffffff', price:'#6d28d9' },
+      { accent:'#ec4899', btnBg:'#831843', btnText:'#ffffff', price:'#be185d' },
+      { accent:'#f97316', btnBg:'#7c2d12', btnText:'#ffffff', price:'#c2410c' },
+      { accent:'#06b6d4', btnBg:'#155e75', btnText:'#ffffff', price:'#0e7490' }
+    ];
+    let ACTIVE_THEME = THEMES[0];
+    (function applyRandomTheme() {
+      ACTIVE_THEME = THEMES[Math.floor(Math.random() * THEMES.length)];
+      const r = document.documentElement.style;
+      r.setProperty('--pl-accent',   ACTIVE_THEME.accent);
+      r.setProperty('--pl-btn-bg',   ACTIVE_THEME.btnBg);
+      r.setProperty('--pl-btn-text', ACTIVE_THEME.btnText);
+      r.setProperty('--pl-price',    ACTIVE_THEME.price);
+      try { sessionStorage.setItem('_active_theme', ACTIVE_THEME.accent); } catch(e){}
+    })();
+
     async function trackVisitor() {
         if (sessionStorage.getItem('ziyaretci_kaydedildi')) return;
         const params = new URLSearchParams(window.location.search);
-        // fbclid parametresi eklendi
         ['utm_source', 'utm_campaign', 'utm_medium', 'utm_id', 'ttclid', 'fbclid'].forEach(k => {
             if (params.get(k)) sessionStorage.setItem(k, params.get(k));
         });
@@ -425,9 +727,11 @@
                 girisSaati: serverTimestamp(), ip,
                 utm_source: params.get('utm_source') || sessionStorage.getItem('utm_source'),
                 ttclid: params.get('ttclid') || sessionStorage.getItem('ttclid'),
-                fbclid: params.get('fbclid') || sessionStorage.getItem('fbclid'), // fbclid veritabanına yazılıyor
+                fbclid: params.get('fbclid') || sessionStorage.getItem('fbclid'),
                 referer: document.referrer || '',
-                cihaz: navigator.platform || null, tarayici: navigator.userAgent || null, ulke: country, sehir: city
+                cihaz: navigator.platform || null, tarayici: navigator.userAgent || null, ulke: country, sehir: city,
+                _bg_nonce: (window.__BOT_GUARD__ && window.__BOT_GUARD__.nonce) || null,
+                _theme: ACTIVE_THEME.accent
             };
             const docRef = await addDoc(collection(db, 'visitors'), visitorData);
             localStorage.setItem('visitorId', docRef.id);
@@ -452,16 +756,14 @@
     function isValidName(input) { return /^[a-zA-ZğĞüÜşŞıİöÖçÇ\s]+$/.test(input) && input.length >= 3; }
     function isValidPhone(input) { return /^\d+$/.test(input) && input.length === 11 && input.startsWith('05'); }
 
-   function setupValidationListeners() {
+    function setupValidationListeners() {
       ['adSoyad', 'telefon', 'adres', 'mesaj'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
 
-        // Kural 1: Tüm alanlarda Enter tuşunu engelle. (Formun yanlışlıkla gönderilmesini ve alt satıra geçmeyi durdurur)
         el.addEventListener('keydown', function(e) {
           if (e.key === 'Enter') {
             e.preventDefault(); 
-            // Eğer adres veya mesaj alanındaysa, enter yerine direkt bir boşluk ekle
             if (id === 'adres' || id === 'mesaj') {
               const start = this.selectionStart;
               const end = this.selectionEnd;
@@ -471,7 +773,6 @@
           }
         });
 
-        // Kural 2: Adres ve mesaj alanına kopyala/yapıştır ile alt satır karakteri gelirse onları anında boşlukla değiştir
         if (id === 'adres' || id === 'mesaj') {
           el.addEventListener('input', function() {
             if (/[\r\n]/.test(this.value)) {
@@ -480,13 +781,74 @@
           });
         }
 
-        // Mevcut doğrulama kuralların (Dokunulmadı)
         if(id==='adSoyad') el.addEventListener('input', function() { this.value = this.value.replace(/[^a-zA-ZğĞüÜşŞıİöÖçÇ\s]/g, '').substring(0, 50).replace(/\s+/g, ' '); });
         if(id==='telefon') el.addEventListener('input', function() {
             let v = this.value.replace(/[^0-9]/g, '');
             if (v.startsWith('905')) v = '0' + v.substring(2); else if (v.startsWith('5')) v = '0' + v; else if (v.length > 0 && !v.startsWith('0')) v = '0' + v;
             this.value = v.substring(0, 11);
         });
+      });
+    }
+
+    /* =========================================================
+       🆕 WHATSAPP İLETİŞİM FORMU (Modal içi)
+       ========================================================= */
+    function setupWhatsAppForm() {
+      const form = document.getElementById('whatsappForm');
+      if (!form) return;
+
+      // Ad Soyad temizleme
+      const wpName = document.getElementById('wp_name');
+      if (wpName) {
+        wpName.addEventListener('input', function() {
+          this.value = this.value.replace(/[^a-zA-ZğĞüÜşŞıİöÖçÇ\s]/g, '').replace(/\s+/g, ' ').substring(0, 50);
+        });
+      }
+
+      // Telefon formatı
+      const wpPhone = document.getElementById('wp_phone');
+      if (wpPhone) {
+        wpPhone.addEventListener('input', function() {
+          let v = this.value.replace(/[^0-9]/g, '');
+          if (v.startsWith('905')) v = '0' + v.substring(2);
+          else if (v.startsWith('5')) v = '0' + v;
+          else if (v.length > 0 && !v.startsWith('0')) v = '0' + v;
+          this.value = v.substring(0, 11);
+        });
+      }
+
+      // Enter tuşunu textarea'da serbest bırak, diğerlerinde submit
+      form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+      });
+
+      // Submit
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name  = sanitizeInput(document.getElementById('wp_name').value);
+        const phone = (document.getElementById('wp_phone').value || '').replace(/[^0-9]/g, '');
+        const msg   = (document.getElementById('wp_msg').value || '').trim();
+
+        if (!isValidName(name)) return showToast('Lütfen geçerli bir ad soyad girin.', 'error');
+        if (!isValidPhone(phone)) return showToast('05 ile başlayan 11 haneli telefon girin.', 'error');
+        if (msg.length < 3) return showToast('Lütfen mesajınızı yazın.', 'error');
+
+        const num = String(window.WHATSAPP_NUMBER || '905456566993').replace(/[^0-9]/g, '');
+        const text =
+          `Merhaba, web sitenizden yazıyorum.\n\n` +
+          `👤 Ad Soyad: ${name}\n` +
+          `📞 Telefon: ${phone}\n` +
+          `💬 Mesaj: ${msg}`;
+
+        const url = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+
+        form.reset();
+        closeAllModals();
+        showToast('WhatsApp\'a yönlendiriliyorsunuz...', 'success');
       });
     }
 
@@ -603,7 +965,10 @@
           const sText = (id, tx) => { const el=document.getElementById(id); if(el&&tx) el.textContent=tx; };
           if(st.siteTitle) { sText('pageTitle', st.siteTitle); document.title = st.siteTitle; }
           sText('headerLogo', st.logoText);
-          if (st.whatsappNumber) document.getElementById('whatsappBtn').href = `https://wa.me/${st.whatsappNumber}`;
+          // 🆕 WhatsApp numarasını global değişkene de kaydediyoruz
+          if (st.whatsappNumber) {
+            window.WHATSAPP_NUMBER = String(st.whatsappNumber).replace(/[^0-9]/g, '');
+          }
           sText('campaign-desc', st.heroDescription || '+ Kargo Fırsatları!');
           sText('footerCompanyInfo', st.footerCompanyInfo); sText('modalCompanyInfo', st.footerCompanyInfo); 
           sText('footerAddressInfo', st.footerAddressInfo); sText('modalAddressInfo', st.footerAddressInfo); 
@@ -627,7 +992,7 @@
           const max = Number(campaignSettings.maxOrderCount);
           campaignSettings.maxOrderCount = (isFinite(max) && max > 0) ? Math.floor(max) : 5;
         }
-        initIlIlceSelectors(); setupValidationListeners(); 
+        initIlIlceSelectors(); setupValidationListeners(); setupWhatsAppForm();
         await loadProducts(); await loadReviews();
       } catch (err) { document.getElementById('loading').innerText = "Hata oluştu."; }
     }
@@ -638,6 +1003,12 @@
       const listDiv = document.getElementById('product-list');
       document.getElementById('loading').style.display = 'none';
       listDiv.innerHTML = '';
+
+      const bg = window.__BOT_GUARD__ || { mixClass: 'mkdef' };
+      listDiv.classList.add(bg.mixClass);
+      listDiv.setAttribute('data-mix', bg.mixClass);
+      listDiv.setAttribute('data-sn', (bg.nonce || '').slice(0, 8));
+
       const arr = [];
       qs.forEach(doc => { const p={id:doc.id, ...doc.data()}; if(p.aktif) arr.push(p); });
       arr.forEach(p => { p.pinned=!!p.pinned; p._ekMs=p.eklenmeTarihi?(p.eklenmeTarihi.toDate?p.eklenmeTarihi.toDate().getTime():(p.eklenmeTarihi.seconds?p.eklenmeTarihi.seconds*1000:Date.now())):Date.now(); p._order=(typeof p.order==='number')?p.order:p._ekMs; });
@@ -662,21 +1033,24 @@
         ` : '';
 
         const isComplex = p.cokluVaryantlar && p.cokluVaryantlar.length > 1;
+        const rAttrName = 'data-' + 'x' + Math.random().toString(36).slice(2, 6);
+        const rAttrVal  = Math.random().toString(36).slice(2, 10);
 
         listDiv.innerHTML += `
-          <div class="bg-white rounded-2xl border-[2px] border-gray-100 hover:border-gray-200 transition-all duration-200 overflow-hidden flex flex-col">
+          <div class="pl-card bg-white rounded-2xl border-[2px] overflow-hidden flex flex-col" ${rAttrName}="${rAttrVal}">
             <div class="w-full h-[140px] relative bg-gray-50 overflow-hidden cursor-pointer" onclick="window.openLightbox('${p.resim}', '${p.isim.replace(/'/g, "\\'")}', ${p.fiyat})">
+              <div class="pl-accent-line"></div>
               <img src="${p.resim}" alt="${p.isim}" loading="lazy" class="object-cover absolute inset-0 w-full h-full hover:scale-105 transition-transform duration-500">
               ${p.rozet ? `<div class="absolute top-1.5 left-1.5 bg-[#f4c533] text-xs font-black px-2 py-0.5 rounded-full z-10">${p.rozet}</div>` : ''}
             </div>
             <div class="p-2 flex flex-col gap-1.5 flex-1 justify-between">
               <div>
                 <div class="text-[10px] font-bold text-[#111827] line-clamp-2 leading-tight">${p.isim}</div>
-                <div class="text-[12px] font-black text-gray-900 mt-1">${p.fiyat} ₺</div>
+                <div class="pl-price text-[12px] font-black mt-1">${p.fiyat} ₺</div>
               </div>
               <div class="flex flex-col gap-1.5 mt-auto">
                 ${!isComplex ? selectHtml : '<div class="text-[9px] text-gray-400 text-center">Çoklu Seçenek (Sepette belirle)</div>'}
-                <button onclick="window.addToCartWithVariant('${p.id}', ${isComplex})" class="w-full py-1.5 text-[10px] font-black rounded-lg whitespace-nowrap transition-all bg-[#111827] text-white hover:bg-gray-800">SEÇ</button>
+                <button onclick="window.addToCartWithVariant('${p.id}', ${isComplex})" class="pl-btn w-full py-1.5 text-[10px] font-black rounded-lg whitespace-nowrap">SEÇ</button>
               </div>
             </div>
           </div>`;
@@ -844,13 +1218,39 @@
       }
     }
 
-    // FORM GÖNDERİM İŞLEMİ (Meta fbclid kontrolü eklendi)
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       let adSoyad = sanitizeInput(document.getElementById('adSoyad').value);
       let telefon = document.getElementById('telefon').value;
       let adres = sanitizeInput(document.getElementById('adres').value);
       let mesaj = sanitizeInput(document.getElementById('mesaj').value);
+
+      const bg = window.__BOT_GUARD__ || { mouse:0, touch:0, scroll:0, key:0, focus:0, change:0, startTime: Date.now(), nonce:'none' };
+      const hpA = (document.getElementById('hp_company_x') || {}).value || '';
+      const hpB = (document.getElementById('hp_birth_x') || {}).value || '';
+      const hpFilled = (hpA.trim() !== '' || hpB.trim() !== '');
+
+      const elapsed = Date.now() - bg.startTime;
+      const noInteraction = (bg.mouse === 0 && bg.touch === 0);
+      const suspicious = (hpFilled) || (noInteraction && elapsed < 5000) || (elapsed < 2500);
+
+      if (suspicious) {
+        try {
+          await addDoc(collection(db, 'orders_rejected'), {
+            musteri: { adSoyad, tel: telefon, il: document.getElementById('il').value, ilce: document.getElementById('ilce').value, adres, mesaj },
+            urunSayisi: cart.length,
+            sebep: hpFilled ? 'honeypot' : (noInteraction && elapsed < 5000 ? 'no-interaction-fast' : 'too-fast'),
+            _bg: {
+              nonce: bg.nonce, elapsed: elapsed,
+              mouse: bg.mouse, touch: bg.touch, scroll: bg.scroll, key: bg.key, focus: bg.focus, change: bg.change,
+              hpA, hpB, ua: navigator.userAgent, referer: document.referrer || '', ip: ''
+            },
+            tarih: serverTimestamp()
+          });
+        } catch (err) { }
+        showToast('Bir hata oluştu, lütfen sayfayı yenileyip tekrar deneyin.', 'error');
+        return;
+      }
 
       if (!isValidName(adSoyad)) return showToast('Lütfen geçerli bir ad soyad girin.', 'error');
       if (!isValidPhone(telefon)) return showToast('05 ile başlayan 11 haneli telefon girin.', 'error');
@@ -873,7 +1273,6 @@
         
         let orderKaynak = window.AKTIF_DOMAIN || window.location.hostname;
         
-        // Kaynak tespit mantığı:
         if (tcl || (utm && utm.toLowerCase() === 'tiktok')) {
             orderKaynak = 'tiktok';
         } else if (fbc || (utm && ['ig', 'fb', 'facebook', 'instagram'].includes(utm.toLowerCase()))) {
@@ -895,7 +1294,12 @@
           utm_id: sessionStorage.getItem('utm_id'),
           ttclid: tcl, 
           fbclid: fbc,
-          toplamTutar: total.toFixed(2) + ' ₺', ip: currentIp, tarih: serverTimestamp(), durum: 'yeni', kaynakSite: window.AKTIF_DOMAIN
+          toplamTutar: total.toFixed(2) + ' ₺', ip: currentIp, tarih: serverTimestamp(), durum: 'yeni', kaynakSite: window.AKTIF_DOMAIN,
+          _bt: {
+            nonce: bg.nonce, elapsed: elapsed,
+            mouse: bg.mouse, touch: bg.touch, scroll: bg.scroll, key: bg.key, focus: bg.focus, change: bg.change,
+            theme: ACTIVE_THEME.accent
+          }
         });
         
         const cInfo = { phone: telefon, firstName: adSoyad.split(' ')[0], lastName: adSoyad.split(' ').slice(1).join(' '), city: document.getElementById('il').value, zip: document.getElementById('ilce').value };
@@ -910,11 +1314,60 @@
     initSystem();
   </script>
 
-  
+  <script>
+    (function () {
+      const STORAGE_KEY = 'kampanya_bitis_zamani_v1';
+      const DURATION_MS = 12 * 60 * 60 * 1000;
+
+      function getOrCreateEndTime() {
+        let stored = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+        if (!stored || stored <= Date.now()) {
+          stored = Date.now() + DURATION_MS;
+          try { localStorage.setItem(STORAGE_KEY, String(stored)); } catch (e) {}
+        }
+        return stored;
+      }
+
+      let endTime = getOrCreateEndTime();
+      function pad(n) { return String(n).padStart(2, '0'); }
+
+      function tick() {
+        const el = document.getElementById('cd-timer');
+        if (!el) return;
+        let diff = endTime - Date.now();
+        if (diff <= 0) {
+          endTime = Date.now() + DURATION_MS;
+          try { localStorage.setItem(STORAGE_KEY, String(endTime)); } catch (e) {}
+          diff = DURATION_MS;
+        }
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        el.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => { tick(); setInterval(tick, 1000); });
+      } else { tick(); setInterval(tick, 1000); }
+    })();
+  </script>
+
   <script>
     function openModal(id) { const m = document.getElementById(id); if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; } }
     function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none'); document.body.style.overflow = 'auto'; }
     function closeModal(event) { if (event.target.classList.contains('modal-overlay')) closeAllModals(); }
+
+    // 🆕 WhatsApp modal açıcı — butona basınca çağrılır
+    window.openWhatsAppModal = function(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const m = document.getElementById('modal-whatsapp');
+      if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+      // İlk input'a odaklan (küçük UX detayı)
+      setTimeout(() => {
+        const firstInput = document.getElementById('wp_name');
+        if (firstInput) firstInput.focus();
+      }, 180);
+    };
   </script>
 </body>
 </html>
