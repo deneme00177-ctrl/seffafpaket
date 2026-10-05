@@ -369,7 +369,6 @@
       pointer-events: none !important;
     }
 
-    /* WhatsApp Modal */
     #modal-whatsapp .modal-content {
       padding: 0;
       overflow: hidden;
@@ -381,38 +380,225 @@
     }
   </style>
 
+  <!-- ============================================================
+       🛡️ ANTI-BOT ERKEN YAKALAYICI v2 (Gelişmiş)
+       - Behavioral fingerprint (mouse jitter, keystroke timing)
+       - Headless detection
+       - Proof-of-Work (SHA-256)
+       - Device fingerprint (SHA-256)
+       - XOR obfuscation helper
+       - Dinamik Field ID map
+       ============================================================ -->
   <script>
-    (function () {
-      let nonce = '';
-      try { nonce = sessionStorage.getItem('_bg_nonce') || ''; } catch (e) {}
-      if (!nonce) {
-        try {
-          nonce = (window.crypto && crypto.randomUUID)
-            ? crypto.randomUUID()
-            : (Math.random().toString(36).slice(2) + Date.now().toString(36));
-          sessionStorage.setItem('_bg_nonce', nonce);
-        } catch (e) {
-          nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  (function () {
+    // 1) Session nonce
+    let nonce = '';
+    try { nonce = sessionStorage.getItem('_bg_nonce') || ''; } catch (e) {}
+    if (!nonce) {
+      try {
+        nonce = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : (Math.random().toString(36).slice(2) + Date.now().toString(36));
+        sessionStorage.setItem('_bg_nonce', nonce);
+      } catch (e) {
+        nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      }
+    }
+
+    const mixClass = 'mk' + Math.random().toString(36).slice(2, 9);
+
+    // 2) Dinamik Field ID Map (her sayfa yüklemesinde rastgele)
+    const randId = () => 'f_' + Math.random().toString(36).slice(2, 8);
+    const FIELD_MAP = {
+      adSoyad: randId(),
+      telefon: randId(),
+      il:      randId(),
+      ilce:    randId(),
+      adres:   randId(),
+      mesaj:   randId()
+    };
+
+    // 3) Ana bot guard objesi
+    window.__BOT_GUARD__ = {
+      nonce, mixClass, FIELD_MAP,
+      startTime: Date.now(),
+      mouse: 0, touch: 0, scroll: 0, key: 0, focus: 0, change: 0,
+      mousePath: [],
+      keystrokeTimes: [],
+      firstInteractionAt: 0,
+      lastInteractionAt: 0,
+      tabSwitches: 0,
+      isHeadless: false
+    };
+    const bg = window.__BOT_GUARD__;
+
+    // 4) Headless detection
+    try {
+      if (navigator.webdriver === true) bg.isHeadless = true;
+      if (!navigator.plugins || navigator.plugins.length === 0) bg.isHeadless = true;
+      if (!navigator.languages || navigator.languages.length === 0) bg.isHeadless = true;
+      if (window.outerWidth === 0 || window.outerHeight === 0) bg.isHeadless = true;
+    } catch (e) {}
+
+    // 5) Event tracking
+    const mark = (k) => {
+      bg[k]++;
+      if (!bg.firstInteractionAt) bg.firstInteractionAt = Date.now();
+      bg.lastInteractionAt = Date.now();
+    };
+
+    document.addEventListener('mousemove', (e) => {
+      mark('mouse');
+      bg.mousePath.push([e.clientX, e.clientY, Date.now()]);
+      if (bg.mousePath.length > 40) bg.mousePath.shift();
+    }, { passive: true });
+
+    document.addEventListener('touchstart', () => mark('touch'), { passive: true });
+    document.addEventListener('scroll',     () => mark('scroll'), { passive: true });
+    document.addEventListener('keydown', () => {
+      mark('key');
+      bg.keystrokeTimes.push(Date.now());
+      if (bg.keystrokeTimes.length > 30) bg.keystrokeTimes.shift();
+    }, { passive: true });
+    document.addEventListener('focusin',    () => mark('focus'), { passive: true });
+    document.addEventListener('change',     () => mark('change'), { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) bg.tabSwitches++;
+    });
+
+    // 6) Behavioral Score (0-100)
+    window.__botScore = function() {
+      const b = window.__BOT_GUARD__;
+      let score = 0;
+
+      // Fare yolunun jitter'ı
+      if (b.mousePath.length >= 5) {
+        let jitter = 0;
+        for (let i = 2; i < b.mousePath.length; i++) {
+          const [x0, y0] = b.mousePath[i-2];
+          const [x1, y1] = b.mousePath[i-1];
+          const [x2, y2] = b.mousePath[i];
+          const a1 = Math.atan2(y1-y0, x1-x0);
+          const a2 = Math.atan2(y2-y1, x2-x1);
+          jitter += Math.abs(a2 - a1);
         }
+        if (jitter > 0.5) score += 30;
       }
 
-      const mixClass = 'mk' + Math.random().toString(36).slice(2, 9);
+      // Tuş vuruş zamanlamasının varyansı (insan düzensiz yazar)
+      if (b.keystrokeTimes.length >= 5) {
+        const gaps = [];
+        for (let i = 1; i < b.keystrokeTimes.length; i++) {
+          gaps.push(b.keystrokeTimes[i] - b.keystrokeTimes[i-1]);
+        }
+        const avg = gaps.reduce((a,b)=>a+b,0) / gaps.length;
+        const variance = gaps.reduce((a,b)=>a+Math.pow(b-avg,2),0) / gaps.length;
+        const stddev = Math.sqrt(variance);
+        if (stddev > 20) score += 25;
+      }
 
-      window.__BOT_GUARD__ = {
-        nonce: nonce,
-        mixClass: mixClass,
-        startTime: Date.now(),
-        mouse: 0, touch: 0, scroll: 0, key: 0, focus: 0, change: 0
-      };
+      // Etkileşim süresi
+      const elapsed = Date.now() - b.startTime;
+      if (elapsed > 8000)  score += 15;
+      if (elapsed > 15000) score += 10;
 
-      const inc = (k) => { try { window.__BOT_GUARD__[k]++; } catch (e) {} };
-      document.addEventListener('mousemove',    () => inc('mouse'),  { passive: true });
-      document.addEventListener('touchstart',   () => inc('touch'),  { passive: true });
-      document.addEventListener('scroll',       () => inc('scroll'), { passive: true });
-      document.addEventListener('keydown',      () => inc('key'),    { passive: true });
-      document.addEventListener('focusin',      () => inc('focus'),  { passive: true });
-      document.addEventListener('change',       () => inc('change'), { passive: true });
-    })();
+      // Fare + scroll + touch kombinasyonu
+      if (b.mouse > 20 && b.scroll > 2) score += 10;
+      if (b.touch > 3) score += 10;
+
+      // Headless ceza
+      if (b.isHeadless) score -= 60;
+
+      return Math.max(0, Math.min(100, score));
+    };
+
+    // 7) Proof-of-Work (SHA-256)
+    async function sha256Hex(str) {
+      const buf = new TextEncoder().encode(str);
+      const hash = await crypto.subtle.digest('SHA-256', buf);
+      return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function solvePOW(challenge, difficulty) {
+      const target = '0'.repeat(difficulty);
+      let n = 0;
+      while (true) {
+        const h = await sha256Hex(challenge + ':' + n);
+        if (h.startsWith(target)) return { nonce: n, hash: h };
+        n++;
+        if (n > 5000000) throw new Error('pow_timeout');
+      }
+    }
+
+    let _powCache = { challenge: null, solution: null, solvedAt: 0 };
+
+    window.__getPOW = async function() {
+      const challenge = nonce + '|' + bg.startTime;
+      if (_powCache.challenge === challenge && (Date.now() - _powCache.solvedAt) < 300000) {
+        return _powCache.solution;
+      }
+      const solution = await solvePOW(challenge, 3); // difficulty 3 → ortalama ~4096 deneme
+      _powCache = { challenge, solution, solvedAt: Date.now() };
+      return solution;
+    };
+
+    // Sayfa yüklendiğinde arka planda çözmeye başla
+    window.addEventListener('load', () => {
+      setTimeout(() => { window.__getPOW().catch(() => {}); }, 1500);
+    });
+
+    // 8) Device fingerprint (SHA-256)
+    window.__getDeviceFP = async function() {
+      try {
+        const data = [
+          navigator.userAgent,
+          navigator.language,
+          screen.width + 'x' + screen.height,
+          screen.colorDepth,
+          new Date().getTimezoneOffset(),
+          navigator.hardwareConcurrency || 0,
+          navigator.deviceMemory || 0,
+          navigator.platform || ''
+        ].join('|');
+        const buf = new TextEncoder().encode(data);
+        const hash = await crypto.subtle.digest('SHA-256', buf);
+        return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 24);
+      } catch (e) { return ''; }
+    };
+
+    // 9) XOR obfuscation helpers
+    window.__xorEnc = function(text, key) {
+      try {
+        let out = '';
+        for (let i = 0; i < text.length; i++) {
+          out += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        }
+        return btoa(unescape(encodeURIComponent(out)));
+      } catch (e) { return ''; }
+    };
+
+    window.__xorDec = function(encoded, key) {
+      try {
+        const text = decodeURIComponent(escape(atob(encoded)));
+        let out = '';
+        for (let i = 0; i < text.length; i++) {
+          out += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        }
+        return out;
+      } catch (e) { return ''; }
+    };
+
+    // 10) Dinamik Field ID'lerini uygula (module script çağıracak)
+    window.__applyFieldMap = function() {
+      Object.entries(FIELD_MAP).forEach(([key, newId]) => {
+        const el = document.getElementById(key);
+        if (el) {
+          el.setAttribute('data-fkey', key);
+          el.id = newId;
+        }
+      });
+    };
+  })();
   </script>
 </head>
 
@@ -475,9 +661,7 @@
           <img alt="5 ÇİFT" class="object-cover absolute h-full w-full inset-0" src="https://i.ibb.co/hxgCYHyp/c9688356693c.png">
           
           <div class="absolute inset-0 pointer-events-none">
-            <!--<div class="floating-badge fb-1"><span class="badge-dot"></span><span></span></div>-->
             <div class="floating-badge fb-2"><span class="badge-dot"></span><span>🚚 ARAS KARGO</span></div>
-              <!--<div class="floating-badge fb-3"><span class="badge-dot"></span><span></span></div>-->
             <div class="floating-badge fb-4"><span class="badge-dot"></span><span>✅ ŞEFFAF KARGO</span></div>
           </div>
 
@@ -592,7 +776,8 @@
             </button>
           </form>
         </section>
-                <div class="px-2.5 mt-6 mb-6">
+        
+        <div class="px-2.5 mt-6 mb-6">
           <div class="rounded-2xl overflow-hidden relative bg-[#111827] shadow-md ring-1 ring-inset ring-[#f4c533]/25" style="aspect-ratio: 16 / 9;">
             <img
               alt="Kampanya Görseli"
@@ -630,7 +815,6 @@
       </button>
     </div>
 
-    <!-- WHATSAPP BUTONU (artık modal açıyor) -->
     <a href="javascript:void(0)" onclick="openWhatsAppModal(event)" id="whatsappBtn" rel="noopener noreferrer" class="fixed right-[max(calc(50%-320px+14px),14px)] bottom-36 w-[50px] h-[50px] bg-[#25D366] rounded-full flex items-center justify-center shadow-lg z-40 hover:scale-105 transition-transform">
       <svg viewBox="0 0 24 24" class="w-6 h-6 fill-white"><path d="M19.1 4.9A9.9 9.9 0 0012 2C6.5 2 2 6.5 2 12c0 1.8.5 3.6 1.4 5.1L2 22l5.1-1.3A10 10 0 0012 22a10 10 0 007.1-17.1zm-7.1 15.4c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.3 8.3 0 013.7 12 8.3 8.3 0 0112 3.7a8.3 8.3 0 015.9 14.2 8.2 8.2 0 01-5.9 2.4zm4.6-6.2c-.2-.1-1.3-.6-1.5-.7-.2-.1-.3-.1-.4.1-.1.2-.6.7-.7.8-.1.1-.2.2-.4.1-.2-.1-.9-.3-1.7-1-.7-.6-1.1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.3-.3.2-.3c.1-.1.1-.2.1-.4s-.4-1.4-.6-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.7.7-.7 1.8 0 1 .7 2.1.8 2.2.1.1 1.4 2.2 3.3 3 .5.2 1 .4 1.3.5.6.2 1.1.2 1.5.1.5-.1 1.3-.5 1.4-1 .2-.5.2-1 .2-1.1 0-.1-.1-.2-.3-.3z"></path></svg>
     </a>
@@ -643,7 +827,6 @@
   <div id="modal-gizlilik" class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeAllModals()">✕</button><h3 class="text-lg font-bold mb-3 border-b pb-2">Gizlilik ve Çerez Politikası</h3><p>Verileriniz 256-bit SSL güvenlik sertifikası ile şifrelenerek korunmaktadır. Üçüncü şahıslarla paylaşılmaz.</p></div></div>
   <div id="modal-kvkk" class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeAllModals()">✕</button><h3 class="text-lg font-bold mb-3 border-b pb-2">KVKK Aydınlatma Metni</h3><p>6698 sayılı kanun kapsamında verileriniz sözleşmenin kurulması amacıyla işlenmektedir.</p></div></div>
 
-  <!-- YENİ: WHATSAPP İLETİŞİM MODAL -->
   <div id="modal-whatsapp" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="wa-header relative px-5 py-5 text-white">
@@ -689,6 +872,14 @@
     const firebaseConfig = await fetch('./firebase-config.json', { cache: 'no-store' }).then(res => res.json());
     const app = initializeApp(firebaseConfig, 'mainApp');
     const db = getFirestore(app);
+
+    /* =========================================================
+       
+       ========================================================= */
+    const $f = (key) => document.querySelector(`[data-fkey="${key}"]`);
+
+    //
+    if (window.__applyFieldMap) window.__applyFieldMap();
 
     const THEMES = [
       { accent:'#f4c533', btnBg:'#111827', btnText:'#ffffff', price:'#111827' },
@@ -740,6 +931,29 @@
     }
     trackVisitor();
 
+    /* =========================================================
+       
+       ========================================================= */
+    async function checkBlacklist() {
+      try {
+        if (!window.__getDeviceFP) return;
+        const deviceId = await window.__getDeviceFP();
+        if (!deviceId) return;
+        const docRef = doc(db, 'blacklist', deviceId);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const form = document.getElementById('orderForm');
+          if (form) {
+            form.innerHTML = '<div class="text-center py-8 text-red-600 font-bold text-sm">Bu cihazdan sipariş kabul edilmemektedir.<br>Lütfen müşteri temsilcisi ile iletişime geçin.</div>';
+          }
+          const sticky = document.getElementById('sticky-bar');
+          if (sticky) sticky.remove();
+          const wa = document.getElementById('whatsappBtn');
+          if (wa) wa.style.display = 'none';
+        }
+      } catch (e) { /* sessiz */ }
+    }
+
     let cart = [];
     let allProducts = [];
     let campaignSettings = { active: false, secondProductPrice: 0, message: "", minOrderCount: 1, cargoActive: false, cargoPrice: 0, maxOrderCount: 5 };
@@ -758,7 +972,7 @@
 
     function setupValidationListeners() {
       ['adSoyad', 'telefon', 'adres', 'mesaj'].forEach(id => {
-        const el = document.getElementById(id);
+        const el = $f(id);
         if (!el) return;
 
         el.addEventListener('keydown', function(e) {
@@ -790,14 +1004,10 @@
       });
     }
 
-    /* =========================================================
-       🆕 WHATSAPP İLETİŞİM FORMU (Modal içi)
-       ========================================================= */
     function setupWhatsAppForm() {
       const form = document.getElementById('whatsappForm');
       if (!form) return;
 
-      // Ad Soyad temizleme
       const wpName = document.getElementById('wp_name');
       if (wpName) {
         wpName.addEventListener('input', function() {
@@ -805,7 +1015,6 @@
         });
       }
 
-      // Telefon formatı
       const wpPhone = document.getElementById('wp_phone');
       if (wpPhone) {
         wpPhone.addEventListener('input', function() {
@@ -817,7 +1026,6 @@
         });
       }
 
-      // Enter tuşunu textarea'da serbest bırak, diğerlerinde submit
       form.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
           e.preventDefault();
@@ -825,7 +1033,6 @@
         }
       });
 
-      // Submit
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         const name  = sanitizeInput(document.getElementById('wp_name').value);
@@ -913,7 +1120,7 @@
       try { ilIlceVerileri = await (await fetch('il-ilce.json')).json(); } catch (error) { ilIlceVerileri = {}; }
     }
     function initIlIlceSelectors() {
-      const ilSelect = document.getElementById('il'), ilceSelect = document.getElementById('ilce');
+      const ilSelect = $f('il'), ilceSelect = $f('ilce');
       if (!ilSelect || !ilceSelect) return;
       if (!ilIlceVerileri || Object.keys(ilIlceVerileri).length === 0) return ilSelect.innerHTML = '<option value="">Veri Yok</option>';
       Object.keys(ilIlceVerileri).sort().forEach(il => ilSelect.innerHTML += `<option value="${il}">${il}</option>`);
@@ -965,7 +1172,6 @@
           const sText = (id, tx) => { const el=document.getElementById(id); if(el&&tx) el.textContent=tx; };
           if(st.siteTitle) { sText('pageTitle', st.siteTitle); document.title = st.siteTitle; }
           sText('headerLogo', st.logoText);
-          // 🆕 WhatsApp numarasını global değişkene de kaydediyoruz
           if (st.whatsappNumber) {
             window.WHATSAPP_NUMBER = String(st.whatsappNumber).replace(/[^0-9]/g, '');
           }
@@ -994,6 +1200,9 @@
         }
         initIlIlceSelectors(); setupValidationListeners(); setupWhatsAppForm();
         await loadProducts(); await loadReviews();
+
+        // 🛡️ Blacklist kontrolü (arka planda)
+        checkBlacklist().catch(() => {});
       } catch (err) { document.getElementById('loading').innerText = "Hata oluştu."; }
     }
 
@@ -1220,30 +1429,76 @@
 
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      let adSoyad = sanitizeInput(document.getElementById('adSoyad').value);
-      let telefon = document.getElementById('telefon').value;
-      let adres = sanitizeInput(document.getElementById('adres').value);
-      let mesaj = sanitizeInput(document.getElementById('mesaj').value);
 
-      const bg = window.__BOT_GUARD__ || { mouse:0, touch:0, scroll:0, key:0, focus:0, change:0, startTime: Date.now(), nonce:'none' };
+      const elAdSoyad = $f('adSoyad');
+      const elTelefon = $f('telefon');
+      const elAdres   = $f('adres');
+      const elMesaj   = $f('mesaj');
+      const elIl      = $f('il');
+      const elIlce    = $f('ilce');
+
+      let adSoyad = sanitizeInput(elAdSoyad ? elAdSoyad.value : '');
+      let telefon = elTelefon ? elTelefon.value : '';
+      let adres = sanitizeInput(elAdres ? elAdres.value : '');
+      let mesaj = sanitizeInput(elMesaj ? elMesaj.value : '');
+      let ilVal = elIl ? elIl.value : '';
+      let ilceVal = elIlce ? elIlce.value : '';
+
+      /* =========================================================
+         
+         ========================================================= */
+      const bg = window.__BOT_GUARD__ || { mouse:0, touch:0, scroll:0, key:0, focus:0, change:0, startTime: Date.now(), nonce:'none', isHeadless:false };
       const hpA = (document.getElementById('hp_company_x') || {}).value || '';
       const hpB = (document.getElementById('hp_birth_x') || {}).value || '';
       const hpFilled = (hpA.trim() !== '' || hpB.trim() !== '');
 
       const elapsed = Date.now() - bg.startTime;
       const noInteraction = (bg.mouse === 0 && bg.touch === 0);
-      const suspicious = (hpFilled) || (noInteraction && elapsed < 5000) || (elapsed < 2500);
+      const botScore = window.__botScore ? window.__botScore() : 50;
+      const isHeadless = bg.isHeadless === true;
+
+      // 1) Proof-of-Work kontrolü
+      let powSolution = null;
+      try {
+        powSolution = await window.__getPOW();
+      } catch (err) {
+        showToast('Güvenlik doğrulaması başarısız, sayfayı yenileyin.', 'error');
+        return;
+      }
+
+      // 2) Device fingerprint
+      let deviceId = '';
+      try {
+        deviceId = window.__getDeviceFP ? await window.__getDeviceFP() : '';
+      } catch (e) {}
+
+      // 3) Şüpheli mi?
+      const suspicious =
+        hpFilled ||
+        isHeadless ||
+        !powSolution ||
+        botScore < 30 ||
+        (noInteraction && elapsed < 5000) ||
+        (elapsed < 2500);
 
       if (suspicious) {
+        const sebep =
+          hpFilled    ? 'honeypot' :
+          isHeadless  ? 'headless' :
+          !powSolution? 'no-pow' :
+          botScore < 30 ? 'low-score' :
+          (noInteraction && elapsed < 5000) ? 'no-interaction-fast' : 'too-fast';
+
         try {
           await addDoc(collection(db, 'orders_rejected'), {
-            musteri: { adSoyad, tel: telefon, il: document.getElementById('il').value, ilce: document.getElementById('ilce').value, adres, mesaj },
+            musteri: { adSoyad, tel: telefon, il: ilVal, ilce: ilceVal, adres, mesaj },
             urunSayisi: cart.length,
-            sebep: hpFilled ? 'honeypot' : (noInteraction && elapsed < 5000 ? 'no-interaction-fast' : 'too-fast'),
+            sebep: sebep,
             _bg: {
-              nonce: bg.nonce, elapsed: elapsed,
+              nonce: bg.nonce, elapsed,
               mouse: bg.mouse, touch: bg.touch, scroll: bg.scroll, key: bg.key, focus: bg.focus, change: bg.change,
-              hpA, hpB, ua: navigator.userAgent, referer: document.referrer || '', ip: ''
+              hpA, hpB, ua: navigator.userAgent, referer: document.referrer || '', ip: '',
+              score: botScore, isHeadless, deviceId
             },
             tarih: serverTimestamp()
           });
@@ -1281,8 +1536,27 @@
             orderKaynak = utm;
         }
 
+        /* =========================================================
+           
+           ========================================================= */
+        const btData = {
+          nonce: bg.nonce,
+          elapsed: elapsed,
+          mouse: bg.mouse, touch: bg.touch, scroll: bg.scroll, key: bg.key, focus: bg.focus, change: bg.change,
+          theme: ACTIVE_THEME.accent,
+          score: botScore,
+          deviceId: deviceId,
+          isHeadless: isHeadless,
+          tabSwitches: bg.tabSwitches || 0,
+          pow: powSolution ? { n: powSolution.nonce, h: powSolution.hash.slice(0, 16) } : null,
+          ua: (navigator.userAgent || '').slice(0, 80),
+          vw: (window.innerWidth || 0) + 'x' + (window.innerHeight || 0)
+        };
+        const encKey = (bg.nonce || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 16) || 'zQ8xK3mP7nR2vT5w';
+        const btEnc = window.__xorEnc ? window.__xorEnc(JSON.stringify(btData), encKey) : '';
+
         const orderRef = await addDoc(collection(db, "orders"), {
-          musteri: { adSoyad, tel: telefon, il: document.getElementById('il').value, ilce: document.getElementById('ilce').value, adres, mesaj },
+          musteri: { adSoyad, tel: telefon, il: ilVal, ilce: ilceVal, adres, mesaj },
           urunler: cart.map(i => {
             let vStr = i.secilenVaryantlar && Object.keys(i.secilenVaryantlar).length > 0 ? Object.entries(i.secilenVaryantlar).map(([k, v]) => `${k}: ${v}`).join(' | ') : (i.secilenVaryant || "");
             return { id: i.id, isim: i.isim, varyant: vStr };
@@ -1295,14 +1569,14 @@
           ttclid: tcl, 
           fbclid: fbc,
           toplamTutar: total.toFixed(2) + ' ₺', ip: currentIp, tarih: serverTimestamp(), durum: 'yeni', kaynakSite: window.AKTIF_DOMAIN,
-          _bt: {
-            nonce: bg.nonce, elapsed: elapsed,
-            mouse: bg.mouse, touch: bg.touch, scroll: bg.scroll, key: bg.key, focus: bg.focus, change: bg.change,
-            theme: ACTIVE_THEME.accent
-          }
+          // 🛡️ Anti-bot katmanı
+          _bt_enc: btEnc,
+          _enc_key: encKey,
+          _score: botScore,
+          _deviceId: deviceId
         });
         
-        const cInfo = { phone: telefon, firstName: adSoyad.split(' ')[0], lastName: adSoyad.split(' ').slice(1).join(' '), city: document.getElementById('il').value, zip: document.getElementById('ilce').value };
+        const cInfo = { phone: telefon, firstName: adSoyad.split(' ')[0], lastName: adSoyad.split(' ').slice(1).join(' '), city: ilVal, zip: ilceVal };
         FacebookPixel.trackPurchase(orderRef.id, cart, total, cInfo); TikTokPixel.trackCompletePayment(orderRef.id, cart, total, cInfo);
         
         window.showSuccessModal();
@@ -1357,16 +1631,24 @@
     function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none'); document.body.style.overflow = 'auto'; }
     function closeModal(event) { if (event.target.classList.contains('modal-overlay')) closeAllModals(); }
 
-    // 🆕 WhatsApp modal açıcı — butona basınca çağrılır
     window.openWhatsAppModal = function(e) {
       if (e && e.preventDefault) e.preventDefault();
       const m = document.getElementById('modal-whatsapp');
       if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-      // İlk input'a odaklan (küçük UX detayı)
       setTimeout(() => {
         const firstInput = document.getElementById('wp_name');
         if (firstInput) firstInput.focus();
       }, 180);
+    };
+
+  
+    window.__decBT = function(enc, key) {
+      if (!window.__xorDec) return console.warn('xorDec yok');
+      try {
+        const json = window.__xorDec(enc, key);
+        console.log('🔓 Decrypted _bt:', JSON.parse(json));
+        return JSON.parse(json);
+      } catch (e) { console.error('Decrypt hatası:', e); }
     };
   </script>
 </body>
