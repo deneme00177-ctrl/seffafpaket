@@ -11,6 +11,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    
+    window.TURNSTILE_CONFIG = {
+      enabled: false,
+      siteKey: '',
+      ready: false,
+      widgetId: null,
+      token: null,
+      loading: false,
+      scriptLoaded: false
+    };
+  </script>
   
   <script>
     let FB_PIXEL_ID = ''; 
@@ -378,20 +391,26 @@
     #modal-whatsapp .wa-header {
       background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     }
+
+    /* ☁️ Turnstile widget konteyneri */
+    #turnstile-container {
+      display: none;
+      margin: 4px 0 8px;
+    }
+    #turnstile-container.active {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #turnstile-container .cf-turnstile {
+      width: 100%;
+    }
   </style>
 
-  <!-- ============================================================
-       🛡️ ANTI-BOT ERKEN YAKALAYICI v2 (Gelişmiş)
-       - Behavioral fingerprint (mouse jitter, keystroke timing)
-       - Headless detection
-       - Proof-of-Work (SHA-256)
-       - Device fingerprint (SHA-256)
-       - XOR obfuscation helper
-       - Dinamik Field ID map
-       ============================================================ -->
+ 
   <script>
   (function () {
-    // 1) Session nonce
+    
     let nonce = '';
     try { nonce = sessionStorage.getItem('_bg_nonce') || ''; } catch (e) {}
     if (!nonce) {
@@ -407,7 +426,7 @@
 
     const mixClass = 'mk' + Math.random().toString(36).slice(2, 9);
 
-    // 2) Dinamik Field ID Map (her sayfa yüklemesinde rastgele)
+   
     const randId = () => 'f_' + Math.random().toString(36).slice(2, 8);
     const FIELD_MAP = {
       adSoyad: randId(),
@@ -418,7 +437,7 @@
       mesaj:   randId()
     };
 
-    // 3) Ana bot guard objesi
+    
     window.__BOT_GUARD__ = {
       nonce, mixClass, FIELD_MAP,
       startTime: Date.now(),
@@ -432,7 +451,7 @@
     };
     const bg = window.__BOT_GUARD__;
 
-    // 4) Headless detection
+    
     try {
       if (navigator.webdriver === true) bg.isHeadless = true;
       if (!navigator.plugins || navigator.plugins.length === 0) bg.isHeadless = true;
@@ -440,7 +459,7 @@
       if (window.outerWidth === 0 || window.outerHeight === 0) bg.isHeadless = true;
     } catch (e) {}
 
-    // 5) Event tracking
+    
     const mark = (k) => {
       bg[k]++;
       if (!bg.firstInteractionAt) bg.firstInteractionAt = Date.now();
@@ -466,12 +485,11 @@
       if (document.hidden) bg.tabSwitches++;
     });
 
-    // 6) Behavioral Score (0-100)
+    
     window.__botScore = function() {
       const b = window.__BOT_GUARD__;
       let score = 0;
 
-      // Fare yolunun jitter'ı
       if (b.mousePath.length >= 5) {
         let jitter = 0;
         for (let i = 2; i < b.mousePath.length; i++) {
@@ -485,7 +503,6 @@
         if (jitter > 0.5) score += 30;
       }
 
-      // Tuş vuruş zamanlamasının varyansı (insan düzensiz yazar)
       if (b.keystrokeTimes.length >= 5) {
         const gaps = [];
         for (let i = 1; i < b.keystrokeTimes.length; i++) {
@@ -497,22 +514,19 @@
         if (stddev > 20) score += 25;
       }
 
-      // Etkileşim süresi
       const elapsed = Date.now() - b.startTime;
       if (elapsed > 8000)  score += 15;
       if (elapsed > 15000) score += 10;
 
-      // Fare + scroll + touch kombinasyonu
       if (b.mouse > 20 && b.scroll > 2) score += 10;
       if (b.touch > 3) score += 10;
 
-      // Headless ceza
       if (b.isHeadless) score -= 60;
 
       return Math.max(0, Math.min(100, score));
     };
 
-    // 7) Proof-of-Work (SHA-256)
+    
     async function sha256Hex(str) {
       const buf = new TextEncoder().encode(str);
       const hash = await crypto.subtle.digest('SHA-256', buf);
@@ -537,17 +551,16 @@
       if (_powCache.challenge === challenge && (Date.now() - _powCache.solvedAt) < 300000) {
         return _powCache.solution;
       }
-      const solution = await solvePOW(challenge, 3); // difficulty 3 → ortalama ~4096 deneme
+      const solution = await solvePOW(challenge, 3);
       _powCache = { challenge, solution, solvedAt: Date.now() };
       return solution;
     };
 
-    // Sayfa yüklendiğinde arka planda çözmeye başla
     window.addEventListener('load', () => {
       setTimeout(() => { window.__getPOW().catch(() => {}); }, 1500);
     });
 
-    // 8) Device fingerprint (SHA-256)
+    
     window.__getDeviceFP = async function() {
       try {
         const data = [
@@ -566,7 +579,7 @@
       } catch (e) { return ''; }
     };
 
-    // 9) XOR obfuscation helpers
+    
     window.__xorEnc = function(text, key) {
       try {
         let out = '';
@@ -588,7 +601,7 @@
       } catch (e) { return ''; }
     };
 
-    // 10) Dinamik Field ID'lerini uygula (module script çağıracak)
+    
     window.__applyFieldMap = function() {
       Object.entries(FIELD_MAP).forEach(([key, newId]) => {
         const el = document.getElementById(key);
@@ -596,6 +609,32 @@
           el.setAttribute('data-fkey', key);
           el.id = newId;
         }
+      });
+    };
+
+    
+    window.__loadTurnstileScript = function() {
+      return new Promise((resolve, reject) => {
+        if (window.turnstile) return resolve(window.turnstile);
+        if (window.TURNSTILE_CONFIG.scriptLoaded) {
+          
+          const t = setInterval(() => {
+            if (window.turnstile) { clearInterval(t); resolve(window.turnstile); }
+          }, 100);
+          setTimeout(() => { clearInterval(t); if (!window.turnstile) reject(new Error('turnstile_timeout')); }, 10000);
+          return;
+        }
+        window.TURNSTILE_CONFIG.scriptLoaded = true;
+        const s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.async = true;
+        s.defer = true;
+        s.onload = () => {
+          if (window.turnstile) resolve(window.turnstile);
+          else reject(new Error('turnstile_missing'));
+        };
+        s.onerror = () => reject(new Error('turnstile_script_error'));
+        document.head.appendChild(s);
       });
     };
   })();
@@ -771,6 +810,11 @@
               <span class="font-bold text-red-600">🚚 Önemli:</span> ARAS KARGO ile çalışıyoruz. Köylere ve askeriye adreslerine gönderim yoktur.
             </div>
 
+            <!-- ☁️ Cloudflare Turnstile widget konteyneri -->
+            <div id="turnstile-container">
+              <div id="turnstile-widget"></div>
+            </div>
+
             <button type="submit" id="submitBtn" class="w-full bg-[#111827] text-white py-4 rounded-xl text-[14px] font-black uppercase tracking-wide disabled:opacity-50 mt-2 transition-all" disabled>
               Onaylamak İçin Ürün Seçin
             </button>
@@ -873,12 +917,8 @@
     const app = initializeApp(firebaseConfig, 'mainApp');
     const db = getFirestore(app);
 
-    /* =========================================================
-       
-       ========================================================= */
     const $f = (key) => document.querySelector(`[data-fkey="${key}"]`);
 
-    //
     if (window.__applyFieldMap) window.__applyFieldMap();
 
     const THEMES = [
@@ -888,7 +928,7 @@
       { accent:'#8b5cf6', btnBg:'#4c1d95', btnText:'#ffffff', price:'#6d28d9' },
       { accent:'#ec4899', btnBg:'#831843', btnText:'#ffffff', price:'#be185d' },
       { accent:'#f97316', btnBg:'#7c2d12', btnText:'#ffffff', price:'#c2410c' },
-      { accent:'#06b6d4', btnBg:'#155e75', btnText:'#ffffff', price:'#0e7490' }
+      { accent:'#06b6d4', btnBg:'#155e75', btnText:'#0e7490', price:'#0e7490' }
     ];
     let ACTIVE_THEME = THEMES[0];
     (function applyRandomTheme() {
@@ -931,9 +971,6 @@
     }
     trackVisitor();
 
-    /* =========================================================
-       
-       ========================================================= */
     async function checkBlacklist() {
       try {
         if (!window.__getDeviceFP) return;
@@ -1059,6 +1096,78 @@
       });
     }
 
+   
+    async function initTurnstile() {
+      if (!window.TURNSTILE_CONFIG.enabled) return;
+      if (!window.TURNSTILE_CONFIG.siteKey) {
+        console.warn('Turnstile aktif ama Site Key yok');
+        return;
+      }
+      if (window.TURNSTILE_CONFIG.ready) return;
+
+      const container = document.getElementById('turnstile-container');
+      const widgetEl = document.getElementById('turnstile-widget');
+      if (!container || !widgetEl) return;
+
+      try {
+        
+        container.classList.add('active');
+
+        const turnstile = await window.__loadTurnstileScript();
+
+       
+        window.TURNSTILE_CONFIG.widgetId = turnstile.render(widgetEl, {
+          sitekey: window.TURNSTILE_CONFIG.siteKey,
+          theme: 'light',
+          size: 'flexible',
+          appearance: 'interaction-only', // 
+          callback: (token) => {
+            window.TURNSTILE_CONFIG.token = token;
+          },
+          'error-callback': () => {
+            window.TURNSTILE_CONFIG.token = null;
+          },
+          'expired-callback': () => {
+            window.TURNSTILE_CONFIG.token = null;
+          },
+          'timeout-callback': () => {
+            window.TURNSTILE_CONFIG.token = null;
+          }
+        });
+
+        window.TURNSTILE_CONFIG.ready = true;
+      } catch (e) {
+        console.warn('Turnstile başlatılamadı:', e?.message || e);
+        container.classList.remove('active');
+      }
+    }
+
+    
+    async function waitForTurnstileToken(timeoutMs = 4000) {
+      if (!window.TURNSTILE_CONFIG.enabled || !window.TURNSTILE_CONFIG.ready) return null;
+
+      
+      if (window.TURNSTILE_CONFIG.token) return window.TURNSTILE_CONFIG.token;
+
+      
+      const start = Date.now();
+      while (Date.now() - start < timeoutMs) {
+        await new Promise(r => setTimeout(r, 150));
+        if (window.TURNSTILE_CONFIG.token) return window.TURNSTILE_CONFIG.token;
+      }
+      return null;
+    }
+
+    
+    function resetTurnstileWidget() {
+      try {
+        if (window.turnstile && window.TURNSTILE_CONFIG.widgetId !== null) {
+          turnstile.reset(window.TURNSTILE_CONFIG.widgetId);
+          window.TURNSTILE_CONFIG.token = null;
+        }
+      } catch (e) {  }
+    }
+
     const FacebookPixel = {
       track(eventName, params = {}, eventId = null) { if (typeof fbq === 'function') fbq('track', eventName, params, eventId ? { eventID: eventId } : undefined); },
       trackViewContent(product) { this.track('ViewContent', { content_name: product.isim, content_ids: [product.id], content_type: 'product', value: product.fiyat, currency: 'TRY' }); },
@@ -1180,6 +1289,15 @@
           sText('footerAddressInfo', st.footerAddressInfo); sText('modalAddressInfo', st.footerAddressInfo); 
           sText('footerSupportInfo', st.footerSupportInfo); sText('modalSupportInfo', st.footerSupportInfo); 
           sText('footerText', st.footerText);
+
+          
+          if (st.turnstileEnabled === true && st.turnstileSiteKey) {
+            window.TURNSTILE_CONFIG.enabled = true;
+            window.TURNSTILE_CONFIG.siteKey = String(st.turnstileSiteKey).trim();
+          } else {
+            window.TURNSTILE_CONFIG.enabled = false;
+            window.TURNSTILE_CONFIG.siteKey = '';
+          }
         }
       } catch (e) {}
     }
@@ -1199,9 +1317,12 @@
           campaignSettings.maxOrderCount = (isFinite(max) && max > 0) ? Math.floor(max) : 5;
         }
         initIlIlceSelectors(); setupValidationListeners(); setupWhatsAppForm();
+
+        
+        initTurnstile().catch(e => console.warn('Turnstile init error', e));
+
         await loadProducts(); await loadReviews();
 
-        // 🛡️ Blacklist kontrolü (arka planda)
         checkBlacklist().catch(() => {});
       } catch (err) { document.getElementById('loading').innerText = "Hata oluştu."; }
     }
@@ -1445,7 +1566,7 @@
       let ilceVal = elIlce ? elIlce.value : '';
 
       /* =========================================================
-         
+        
          ========================================================= */
       const bg = window.__BOT_GUARD__ || { mouse:0, touch:0, scroll:0, key:0, focus:0, change:0, startTime: Date.now(), nonce:'none', isHeadless:false };
       const hpA = (document.getElementById('hp_company_x') || {}).value || '';
@@ -1507,6 +1628,19 @@
         return;
       }
 
+      /* =========================================================
+        
+         ========================================================= */
+      let turnstileToken = null;
+      if (window.TURNSTILE_CONFIG.enabled && window.TURNSTILE_CONFIG.ready) {
+        // Token'ı bekle (max 4sn)
+        turnstileToken = await waitForTurnstileToken(4000);
+        if (!turnstileToken) {
+          showToast('Güvenlik doğrulaması tamamlanıyor, lütfen birkaç saniye sonra tekrar deneyin.', 'warning');
+          return;
+        }
+      }
+
       if (!isValidName(adSoyad)) return showToast('Lütfen geçerli bir ad soyad girin.', 'error');
       if (!isValidPhone(telefon)) return showToast('05 ile başlayan 11 haneli telefon girin.', 'error');
       if (adres.length < 10) return showToast('Geçerli bir açık adres girin.', 'error');
@@ -1536,9 +1670,6 @@
             orderKaynak = utm;
         }
 
-        /* =========================================================
-           
-           ========================================================= */
         const btData = {
           nonce: bg.nonce,
           elapsed: elapsed,
@@ -1569,20 +1700,33 @@
           ttclid: tcl, 
           fbclid: fbc,
           toplamTutar: total.toFixed(2) + ' ₺', ip: currentIp, tarih: serverTimestamp(), durum: 'yeni', kaynakSite: window.AKTIF_DOMAIN,
-          // 🛡️ Anti-bot katmanı
+          
           _bt_enc: btEnc,
           _enc_key: encKey,
           _score: botScore,
-          _deviceId: deviceId
+          _deviceId: deviceId,
+          
+          _turnstileToken: turnstileToken || null,
+          _turnstileVerified: false
         });
         
         const cInfo = { phone: telefon, firstName: adSoyad.split(' ')[0], lastName: adSoyad.split(' ').slice(1).join(' '), city: ilVal, zip: ilceVal };
         FacebookPixel.trackPurchase(orderRef.id, cart, total, cInfo); TikTokPixel.trackCompletePayment(orderRef.id, cart, total, cInfo);
         
         window.showSuccessModal();
+
+        
+        resetTurnstileWidget();
+
         ['ttclid', 'tracked_ttclid', 'fbclid'].forEach(k => sessionStorage.removeItem(k));
         setTimeout(() => location.reload(), 15000);
-      } catch (err) { showToast('Hata: ' + err.message, 'error'); btn.disabled = false; btn.innerText = 'SİPARİŞİ ONAYLA →'; }
+      } catch (err) { 
+        showToast('Hata: ' + err.message, 'error'); 
+        btn.disabled = false; 
+        btn.innerText = 'SİPARİŞİ ONAYLA →';
+        
+        resetTurnstileWidget();
+      }
     });
 
     initSystem();
@@ -1641,7 +1785,6 @@
       }, 180);
     };
 
-  
     window.__decBT = function(enc, key) {
       if (!window.__xorDec) return console.warn('xorDec yok');
       try {
