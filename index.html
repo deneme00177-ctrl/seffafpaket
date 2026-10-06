@@ -1109,29 +1109,43 @@
       const widgetEl = document.getElementById('turnstile-widget');
       if (!container || !widgetEl) return;
 
-      try {
-        
+            try {
+        // Widget'ı görünür yap
         container.classList.add('active');
 
         const turnstile = await window.__loadTurnstileScript();
 
-       
+        // Widget'ı render et
         window.TURNSTILE_CONFIG.widgetId = turnstile.render(widgetEl, {
           sitekey: window.TURNSTILE_CONFIG.siteKey,
           theme: 'light',
           size: 'flexible',
-          appearance: 'interaction-only', // 
+          appearance: 'always',           // ⚡ Her zaman görünür
+          execution: 'render',            // ⚡ Otomatik çalış
+          retry: 'auto',
+          'refresh-expired': 'auto',
           callback: (token) => {
+            console.log('✅ Turnstile token alındı');
             window.TURNSTILE_CONFIG.token = token;
           },
-          'error-callback': () => {
+          'error-callback': (err) => {
+            console.warn('⚠️ Turnstile hata:', err);
             window.TURNSTILE_CONFIG.token = null;
           },
           'expired-callback': () => {
             window.TURNSTILE_CONFIG.token = null;
+            // Otomatik yenile
+            try { turnstile.reset(window.TURNSTILE_CONFIG.widgetId); } catch(e){}
           },
           'timeout-callback': () => {
             window.TURNSTILE_CONFIG.token = null;
+            try { turnstile.reset(window.TURNSTILE_CONFIG.widgetId); } catch(e){}
+          },
+          'unsupported-callback': () => {
+            // Eski tarayıcı — Turnstile çalışmadı, sistemi kilitleme
+            console.warn('Turnstile desteklenmiyor, koruma atlanıyor');
+            window.TURNSTILE_CONFIG.ready = false;
+            window.TURNSTILE_CONFIG.enabled = false;
           }
         });
 
@@ -1139,21 +1153,26 @@
       } catch (e) {
         console.warn('Turnstile başlatılamadı:', e?.message || e);
         container.classList.remove('active');
+        window.TURNSTILE_CONFIG.ready = false;
       }
-    }
 
     
-    async function waitForTurnstileToken(timeoutMs = 4000) {
+        async function waitForTurnstileToken(timeoutMs = 15000) {
       if (!window.TURNSTILE_CONFIG.enabled || !window.TURNSTILE_CONFIG.ready) return null;
 
-      
+      // Zaten hazırsa direkt dön
       if (window.TURNSTILE_CONFIG.token) return window.TURNSTILE_CONFIG.token;
 
-      
+      // Token bekle — Cloudflare bazen 5-10 sn sürer
       const start = Date.now();
       while (Date.now() - start < timeoutMs) {
-        await new Promise(r => setTimeout(r, 150));
+        await new Promise(r => setTimeout(r, 200));
         if (window.TURNSTILE_CONFIG.token) return window.TURNSTILE_CONFIG.token;
+
+        // Kullanıcıyı bilgilendir (ilk denemede)
+        if (Date.now() - start > 3000 && Date.now() - start < 3200) {
+          console.log('Turnstile doğrulaması devam ediyor...');
+        }
       }
       return null;
     }
@@ -1631,14 +1650,28 @@
       /* =========================================================
         
          ========================================================= */
-      let turnstileToken = null;
+            let turnstileToken = null;
       if (window.TURNSTILE_CONFIG.enabled && window.TURNSTILE_CONFIG.ready) {
-        // Token'ı bekle (max 4sn)
-        turnstileToken = await waitForTurnstileToken(4000);
+        // Önce reset edip taze token isteyelim
+        try {
+          if (window.turnstile && window.TURNSTILE_CONFIG.widgetId !== null) {
+            turnstile.reset(window.TURNSTILE_CONFIG.widgetId);
+            window.TURNSTILE_CONFIG.token = null;
+          }
+        } catch(e) {}
+
+        // Kullanıcıya bilgi
+        btn.innerText = "⏳ GÜVENLİK DOĞRULAMASI...";
+        
+        // Token'ı bekle (max 15sn)
+        turnstileToken = await waitForTurnstileToken(15000);
         if (!turnstileToken) {
-          showToast('Güvenlik doğrulaması tamamlanıyor, lütfen birkaç saniye sonra tekrar deneyin.', 'warning');
+          showToast('Güvenlik doğrulaması zaman aşımına uğradı. Lütfen sayfayı yenileyin.', 'warning');
+          btn.innerText = "SİPARİŞİ ONAYLA →";
+          btn.disabled = false;
           return;
         }
+        btn.innerText = "⏳ İŞLENİYOR...";
       }
 
       if (!isValidName(adSoyad)) return showToast('Lütfen geçerli bir ad soyad girin.', 'error');
